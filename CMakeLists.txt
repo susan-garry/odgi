@@ -501,6 +501,7 @@ add_library(odgi_objs OBJECT
   ${CMAKE_SOURCE_DIR}/src/subgraph.cpp
   ${CMAKE_SOURCE_DIR}/src/version.cpp
   ${CMAKE_SOURCE_DIR}/src/subcommand/depth_main.cpp
+  ${CMAKE_SOURCE_DIR}/src/subcommand/depth_opts_main.cpp
   ${CMAKE_SOURCE_DIR}/src/subcommand/overlap_main.cpp
   ${CMAKE_SOURCE_DIR}/src/unittest/driver.cpp
   ${CMAKE_SOURCE_DIR}/src/unittest/handle.cpp
