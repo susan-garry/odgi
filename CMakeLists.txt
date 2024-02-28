@@ -828,38 +828,38 @@ target_link_libraries(odgi ${odgi_LIBS})
 set_target_properties(odgi PROPERTIES OUTPUT_NAME "odgi")
 
 
-if (NOT PIC)
-  MESSAGE(STATUS "Can not build python bindings with PIC=OFF")
-else (NOT PIC)
-  if (NOT pybind11_FOUND)
-    add_subdirectory(deps/pybind11)
-  endif (NOT pybind11_FOUND)
+# if (NOT PIC)
+#  MESSAGE(STATUS "Can not build python bindings with PIC=OFF")
+# else (NOT PIC)
+#  if (NOT pybind11_FOUND)
+#    add_subdirectory(deps/pybind11)
+#  endif (NOT pybind11_FOUND)
 
   # Build Python modules, first the FFI - note we added a second module so
   # as not to confuse things with the old bindings
-  pybind11_add_module(odgi_ffi "${CMAKE_SOURCE_DIR}/src/pythonffi.cpp")
-  add_dependencies(odgi_ffi ${odgi_DEPS} libodgi_shared)
-  target_include_directories(odgi_ffi PUBLIC ${odgi_INCLUDES})
-  target_link_libraries(odgi_ffi PUBLIC "${odgi_LIBS}" $<TARGET_FILE:libodgi_shared>)
-  set_target_properties(odgi_ffi PROPERTIES OUTPUT_NAME "odgi_ffi")
-  install(TARGETS odgi_ffi LIBRARY DESTINATION lib)
-  add_pydoctest(odgi_ffi)
-  add_pydoctest(odgi_performance)
+#  pybind11_add_module(odgi_ffi "${CMAKE_SOURCE_DIR}/src/pythonffi.cpp")
+#  add_dependencies(odgi_ffi ${odgi_DEPS} libodgi_shared)
+#  target_include_directories(odgi_ffi PUBLIC ${odgi_INCLUDES})
+#  target_link_libraries(odgi_ffi PUBLIC "${odgi_LIBS}" $<TARGET_FILE:libodgi_shared>)
+#  set_target_properties(odgi_ffi PROPERTIES OUTPUT_NAME "odgi_ffi")
+#  install(TARGETS odgi_ffi LIBRARY DESTINATION lib)
+#  add_pydoctest(odgi_ffi)
+#  add_pydoctest(odgi_performance)
 
   # Build original Python module
-  pybind11_add_module(odgi_pybind11 "${CMAKE_SOURCE_DIR}/src/pythonmodule.cpp")
-  add_dependencies(odgi_pybind11 ${odgi_DEPS} libodgi_static)
-  target_include_directories(odgi_pybind11 PUBLIC ${odgi_INCLUDES})
-  target_link_libraries(odgi_pybind11 PRIVATE "${CMAKE_SOURCE_DIR}/lib/libodgi.a" "${odgi_LIBS}")
-  set_target_properties(odgi_pybind11 PROPERTIES OUTPUT_NAME "odgi")
-  install(TARGETS odgi_pybind11 LIBRARY DESTINATION lib)
-  add_test(
-    NAME pythonmodule
-    COMMAND python3 -c "import odgi; g = odgi.graph()"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test)
-  set_tests_properties(pythonmodule PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_SOURCE_DIR}/lib;LD_LIBRARY_PATH=$ENV{LIBRARY_PATH};LD_PRELOAD=${PRELOAD}")
+#  pybind11_add_module(odgi_pybind11 "${CMAKE_SOURCE_DIR}/src/pythonmodule.cpp")
+#  add_dependencies(odgi_pybind11 ${odgi_DEPS} libodgi_static)
+#  target_include_directories(odgi_pybind11 PUBLIC ${odgi_INCLUDES})
+#  target_link_libraries(odgi_pybind11 PRIVATE "${CMAKE_SOURCE_DIR}/lib/libodgi.a" "${odgi_LIBS}")
+#  set_target_properties(odgi_pybind11 PROPERTIES OUTPUT_NAME "odgi")
+#  install(TARGETS odgi_pybind11 LIBRARY DESTINATION lib)
+#  add_test(
+#    NAME pythonmodule
+#    COMMAND python3 -c "import odgi; g = odgi.graph()"
+#    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test)
+#  set_tests_properties(pythonmodule PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_SOURCE_DIR}/lib;LD_LIBRARY_PATH=$ENV{LIBRARY_PATH};LD_PRELOAD=${PRELOAD}")
 
-endif (NOT PIC)
+# endif (NOT PIC)
 
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/include)
 execute_process(COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/generate_git_version.sh ${CMAKE_SOURCE_DIR}/include)

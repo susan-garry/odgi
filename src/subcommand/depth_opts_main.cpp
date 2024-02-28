@@ -35,7 +35,7 @@ namespace odgi {
                                                   {'s', "subset-paths"});
         args::Flag graph_depth_vec(depth_opts, "graph-depth-vec",
                                    "Compute the depth on each node in the graph, writing a vector by base in one line.",
-                                   {'v', "graph-depth-vec"});
+                                   {'v', "graph-depth-vec"}, "boolean");
         args::ValueFlag<std::string> _optimizations(depth_opts, "optimizations",
                                                   "The optimization function to be benchmarked",
                                                   {'O', "depth-opt"});
@@ -87,7 +87,7 @@ namespace odgi {
         }
 
         // Compute paths_to_consider
-        std::string optimizations = _optimizations ? _optimizations : "baseline"
+        const std::string optimizations = args::get(_optimizations);
         std::vector<bool> paths_to_consider;
         if (_subset_paths) {
             paths_to_consider.resize(graph.get_path_count() + 1, false);
@@ -106,7 +106,7 @@ namespace odgi {
                     }
                 }
             } else {
-                std::cerr << "[odgi::depth] error: optimization " << depth_opt << " not recognized" << std::endl;
+                std::cerr << "[odgi::depth] error: optimization " << optimizations << " not recognized" << std::endl;
                 exit(1);
             }
         } else {
@@ -135,10 +135,11 @@ namespace odgi {
             // For optional ablation 4, could package into tasks and use a task-driven workflow
             graph.for_each_handle(
                 [&](const handle_t& h) {
+                    auto id = graph.get_id(h);
                     depths[id - shift] = get_graph_node_depth(graph, h, paths_to_consider);
                 }, true);
         } else {
-            std::cerr << "[odgi::depth] error: optimization " << depth_opt << " not recognized" << std::endl;
+            std::cerr << "[odgi::depth] error: optimizations " << optimizations << " not recognized" << std::endl;
             exit(1);
         }
 
@@ -146,7 +147,7 @@ namespace odgi {
         if (graph_depth_vec) {
             std::cout << (og_file ? args::get(og_file) : "graph") << "_vec";
             for (uint64_t i = 0; i < graph.get_node_count(); ++i) {
-                std::cout << " " << depth;
+                std::cout << " " << depths[i];
             }
             std::cout << std::endl;
         }
@@ -154,7 +155,7 @@ namespace odgi {
         return 0;
     }
 
-    static Subcommand odgi_depth("depth-opts", "Compute the validity and runtime of optimized versions of node depth.",
+    static Subcommand odgi_depth_opt("depth-opts", "Compute the validity and runtime of optimized versions of node depth.",
                                  PIPELINE, 3, main_depth_opt);
 
 }
