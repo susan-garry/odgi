@@ -62,7 +62,7 @@ namespace odgi {
         }
 
         if (!og_file) {
-            std::cerr << "[odgi::depth] error: please specify a target graph via -i=[FILE], --idx=[FILE]." << std::endl;
+            std::cerr << "[odgi::depth-opts] error: please specify a target graph via -i=[FILE], --idx=[FILE]." << std::endl;
             return 1;
         }
 
@@ -82,7 +82,7 @@ namespace odgi {
         omp_set_num_threads((int) num_threads);
 		const uint64_t shift = graph.min_node_id();
         if (graph.max_node_id() - shift >= graph.get_node_count()){
-            std::cerr << "[odgi::depth] error: the node IDs are not compacted. Please run 'odgi sort' using -O, --optimize to optimize the graph." << std::endl;
+            std::cerr << "[odgi::depth-opts] error: the node IDs are not compacted. Please run 'odgi sort' using -O, --optimize to optimize the graph." << std::endl;
             exit(1);
         }
 
@@ -98,7 +98,7 @@ namespace odgi {
                 while (std::getline(refs, line)) {
                     if (!line.empty()) {
                         if (!graph.has_path(line)) {
-                            std::cerr << "[odgi::depth] error: path " << line << " not found in graph" << std::endl;
+                            std::cerr << "[odgi::depth-opts] error: path " << line << " not found in graph" << std::endl;
                             exit(1);
                         }
 
@@ -106,7 +106,7 @@ namespace odgi {
                     }
                 }
             } else {
-                std::cerr << "[odgi::depth] error: optimization " << optimizations << " not recognized" << std::endl;
+                std::cerr << "[odgi::depth-opts] error: optimization " << optimizations << " not recognized" << std::endl;
                 exit(1);
             }
         } else {
@@ -139,7 +139,7 @@ namespace odgi {
                     depths[id - shift] = get_graph_node_depth(graph, h, paths_to_consider);
                 }, true);
         } else {
-            std::cerr << "[odgi::depth] error: optimizations " << optimizations << " not recognized" << std::endl;
+            std::cerr << "[odgi::depth-opts] error: optimizations " << optimizations << " not recognized" << std::endl;
             exit(1);
         }
 
