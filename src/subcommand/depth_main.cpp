@@ -259,10 +259,10 @@ namespace odgi {
                                     graph.get_path_handle_of_step(occ))
                                 ];
                         });
-                    auto length = graph.get_length(h);
-                    for (uint64_t i = 0; i < length; ++i) {
+                    // auto length = graph.get_length(h);
+                    // for (uint64_t i = 0; i < length; ++i) {
                         std::cout << " " << depth;
-                    }
+                    // }
                 });
             std::cout << std::endl;
         } else if (path_depth) {

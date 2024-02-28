@@ -38,7 +38,7 @@ namespace odgi {
                                    {'v', "graph-depth-vec"}, "boolean");
         args::ValueFlag<std::string> _optimizations(depth_opts, "optimizations",
                                                   "The optimization function to be benchmarked",
-                                                  {'O', "depth-opt"});
+                                                  {'O', "depth-opt"}, "baseline");
 
         args::Group threading_opts(parser, "[ Threading ] ");
         args::ValueFlag<uint64_t> _num_threads(threading_opts, "N", "Number of threads to use in parallel operations.", {'t', "threads"});
