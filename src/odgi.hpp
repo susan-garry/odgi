@@ -187,7 +187,7 @@ public:
 protected:
 
     /// Execute a function on each path in the graph
-    bool for_each_path_handle_impl(const std::function<bool(const path_handle_t&)>& iteratee) const;
+    bool for_each_path_handle_impl(const std::function<bool(const path_handle_t&)>& iteratee, bool parallel = false) const;
 
     /// Enumerate the path steps on a given handle (strand agnostic)
     bool for_each_step_on_handle_impl(const handle_t& handle, const std::function<bool(const step_handle_t&)>& iteratee) const;

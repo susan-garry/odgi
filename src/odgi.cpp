@@ -247,15 +247,29 @@ size_t graph_t::get_path_count() const {
 }
 
 /// Execute a function on each path in the graph
-bool graph_t::for_each_path_handle_impl(const std::function<bool(const path_handle_t&)>& iteratee) const {
-    bool flag = true;
-    for (uint64_t i = 1; i <= _path_handle_next; ++i) {
-        path_metadata_t* p;
-        if (path_metadata_h->Find(i, p)) {
-            flag &= iteratee(as_path_handle(i));
+bool graph_t::for_each_path_handle_impl(const std::function<bool(const path_handle_t&)>& iteratee, bool parallel) const {
+    if (parallel) {
+        volatile bool flag = true;
+        #pragma omp parallel for
+        for (uint64_t i = 1; i <= _path_handle_next; ++i) {
+            path_metadata_t* p;
+            if (path_metadata_h->Find(i, p)) {
+                bool result = iteratee(as_path_handle(i));
+                #pragma omp atomic
+                flag &= result;
+            }
         }
+        return flag;
+    } else {
+        bool flag = true;
+        for (uint64_t i = 1; i <= _path_handle_next; ++i) {
+            path_metadata_t* p;
+            if (path_metadata_h->Find(i, p)) {
+                flag &= iteratee(as_path_handle(i));
+            }
+        }
+        return flag;
     }
-    return flag;
 }
 
 bool graph_t::for_each_step_on_handle_impl(const handle_t& handle, const std::function<bool(const step_handle_t&)>& iteratee) const {

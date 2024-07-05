@@ -1,4 +1,4 @@
-// taken from https://github.com/heringerp/odgi.git
+// modified from https://github.com/heringerp/odgi/tree/performance_release
 
 #include "subcommand.hpp"
 
@@ -31,6 +31,8 @@ namespace odgi {
 												 "Input file containing the list of graphs to squeeze into the same\n"
 												 "  file. The file must contain one graph per line. It also accepts GFAv1, but the on-the-fly conversion to the ODGI format requires additional time!",
 												 {'i', "input-graph"});
+		args::Flag node_traversal(parser, "node_traversal", "Traverse the graph along each node rather than each path",
+												{'n', "node-traversal"});
 		args::Group threading_opts(parser, "[ Threading ]");
 		args::ValueFlag<uint64_t> nthreads(threading_opts, "N", "Number of threads to use for parallel operations.",
 										   {'t', "threads"});
@@ -71,29 +73,36 @@ namespace odgi {
 			}
 		}
 
-//		std::cerr << graph.get_node_count() << std::endl;
-		std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+		if args::get(node_traversal) {
+			// std::cerr << graph.get_node_count() << std::endl;
+			std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+			graph.for_each_handle([&](const handle_t &node) {
+				uint64_t num_steps = 0;
+				graph.for_each_step_on_handle(node, [&](const step_handle_t &step) {
+					num_steps++
+				});
+				// #pragma omp critical (cout)
+				// std::cerr << node.get_id() << ": " << num_steps << std::endl;
+			}, true);
+			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+			std::cerr << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
+		} else {
+			// std::cerr << graph.get_node_count() << std::endl;
+			std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-		std::vector<path_handle_t> paths;
-		paths.reserve(graph.get_path_count());
-		graph.for_each_path_handle([&](const path_handle_t &path) {
-			paths.push_back(path);
-		});
+			graph.for_each_path_handle([&](const path_handle_t &path) {
+				uint64_t num_steps = 0;
+				graph.for_each_step_in_path(path, [&](const step_handle_t &step) {
+					num_steps++;
+				});
 
-#pragma omp parallel for schedule(dynamic, 1) num_threads(num_threads)
-		for (auto path : paths) {
-			uint64_t num_steps = 0;
-			graph.for_each_step_in_path(path, [&](const step_handle_t &step) {
-				num_steps++;
-			});
-
-#pragma omp critical (cout)
-			std::cerr << graph.get_path_name(path) << ": " << num_steps << std::endl;
+				// #pragma omp critical (cout)
+				// std::cerr << graph.get_path_name(path) << ": " << num_steps << std::endl;
+			}, num_threads > 1);
+			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+			std::cerr << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 		}
-
-		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-		std::cerr << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
-
+		
 		return 0;
 	}
 

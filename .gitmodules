@@ -15,7 +15,7 @@
 	url = https://github.com/vgteam/gfakluge.git
 [submodule "deps/libhandlegraph"]
 	path = deps/libhandlegraph
-	url = https://github.com/vgteam/libhandlegraph.git
+	url = https://github.com/susan-garry/libhandlegraph.git
 [submodule "deps/args"]
 	path = deps/args
 	url = https://github.com/Taywee/args.git
@@ -73,3 +73,5 @@
 [submodule "deps/atomicbitvector"]
 	path = deps/atomicbitvector
 	url = https://github.com/ekg/atomicbitvector.git
+[submodule "deps/libhandlegraph/"]
+	branch = par-paths
