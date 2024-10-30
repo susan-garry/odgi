@@ -73,13 +73,13 @@ namespace odgi {
 			}
 		}
 
-		if args::get(node_traversal) {
+		if (args::get(node_traversal)) {
 			// std::cerr << graph.get_node_count() << std::endl;
 			std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 			graph.for_each_handle([&](const handle_t &node) {
 				uint64_t num_steps = 0;
 				graph.for_each_step_on_handle(node, [&](const step_handle_t &step) {
-					num_steps++
+					num_steps++;
 				});
 				// #pragma omp critical (cout)
 				// std::cerr << node.get_id() << ": " << num_steps << std::endl;
@@ -106,7 +106,7 @@ namespace odgi {
 		return 0;
 	}
 
-	static Subcommand odgi_performance("performance", "Count the number of steps in a graph by traversing paths in parallel",
+	static Subcommand odgi_performance("performance", "Count the number of steps in a graph. Traverses paths by default.",
 								   PIPELINE, 3, main_performance);
 
 }
